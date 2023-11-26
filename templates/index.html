@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Webapp</title>
+</head>
+<body>
+    <h1>Chat with the AI Bot</h1>
+    <div id="chat-container">
+        <div id="chat-history"></div>
+        <div id="user-input">
+            <input type="text" id="user-query" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userQuery = document.getElementById('user-query').value;
+            appendMessage('user', userQuery);
+
+            // Make an AJAX request to get the bot's response
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user_query=' + encodeURIComponent(userQuery),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botResponse = data.bot_response;
+                appendMessage('bot', botResponse);
+            });
+        }
+
+        function appendMessage(sender, message) {
+            const chatHistory = document.getElementById('chat-history');
+            const messageElement = document.createElement('div');
+            messageElement.className = sender;
+            messageElement.textContent = sender.charAt(0).toUpperCase() + sender.slice(1) + ': ' + message;
+            chatHistory.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>
